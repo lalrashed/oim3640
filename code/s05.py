@@ -31,4 +31,4 @@ len() retrieves the number of places in an array.
 i is the index or placement of each product and their appropirate prices """
 for i in range(len(Products)):
     tax = tax_calcualtor(Prices[i], state_tax, fee)
-    print(f'you bought {Products[i]} for ${Prices[i]} and paid ${tax} in tax')
+    print(f'you bought {Products[i]} for ${Prices[i]} and paid ${tax:.2f} in tax')
