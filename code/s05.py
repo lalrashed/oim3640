@@ -13,7 +13,7 @@ def tax_calcualtor(prod_price, tax, state_fee ):
             tax+=0.10
     paid= prod_price*tax  
     #print (f'you pay ${paid} in tax')
-    return paid # will return none if not explictly defined what to return.  
+    return paid # will return none as not explictly defined what to return.  
 
 #store the value retrieved from the calculator 
 stored = tax_calcualtor(97375, 0.3, True)
