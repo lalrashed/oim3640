@@ -154,3 +154,8 @@ This project will use:
 ---
 
 I want to pursue this project because I think it will challenge me while also being fun. I adore cats, so a cat-focused game is an exciting prospect to build out!
+
+## Ideas mid-development 
+- Associate a certain amt of catnip with boost in defence? how much are treats really going to be used?
+- add more events 
+- add a ascii image of the cat in the intro 

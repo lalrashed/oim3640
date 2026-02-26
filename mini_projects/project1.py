@@ -2,7 +2,7 @@
 """Project 1 - Meowtal Combat 
 """
 
-
+import random
 def create_player(name):
     """Create and return the player stats dictionary. Set to default values."""
     return {
@@ -16,6 +16,30 @@ def create_player(name):
         "treats": 10,
         "catnip": 2,
     }
+
+def main_menu():
+    """Display the main menu options."""
+    print("\n=== MEOWTAL COMBAT ===")
+    print("1. Explore 🔭")
+    print("2. Shop 🛍️")
+    print("3. View Stats 🌟 ")
+    print("4. Quit 🛑")
+
+def handle_menu_choice(player, choice):
+    """Handle one menu choice. Return False to stop the game loop."""
+    if choice == "1":
+        explore(player)
+    elif choice == "2":
+        print("\nShop is coming")
+    elif choice == "3":
+        show_stats(player)
+    elif choice == "4":
+        print("Goodbye, alley cat.")
+        return False
+    else:
+        print("Invalid choice. Enter 1, 2, 3, or 4.")
+
+    return True
 
 
 def show_stats(player):
@@ -31,30 +55,36 @@ def show_stats(player):
     print(f"Catnip: {player['catnip']}")
 
 
-def main_menu():
-    """Display the main menu options."""
-    print("\n=== MEOWTAL COMBAT ===")
-    print("1. Explore 🔭")
-    print("2. Shop 🛍️")
-    print("3. View Stats 🌟 ")
-    print("4. Quit 🛑")
-
-
-def handle_menu_choice(player, choice):
-    """Handle one menu choice. Return 3False to stop the game loop."""
-    if choice == "1":
-        print("\nExplore is coming ")
-    elif choice == "2":
-        print("\nShop is coming")
-    elif choice == "3":
-        show_stats(player)
-    elif choice == "4":
-        print("Goodbye, alley cat.")
-        return False
+def explore(player):
+    """Handle random events when the player explores."""
+    print("\nYou sneak into a neon-lit alley...")
+    #randomizer for determining events
+    event = random.randint(1, 100)
+    #greatest prob for action/combat to keep game interesting and not make it too easy. Reward are less common. 
+    if event <= 40:
+        print("A rogue Roomba appears and chases you!")
+        print("Combat function is coming later.")
+        print("Tip: save catnip for combat healing.")
+    elif event <= 70:
+        found_treats = random.randint(2, 8) #randomizes num treats you get each time
+        player["treats"] += found_treats #update stats
+        print(f"You found a fish-snack stash! +{found_treats} treats.")
+        print("Treats are currency for the shop, not direct healing.") #inform player
+    elif event <= 90:
+        heal_amount = random.randint(2, 4)
+        old_hp = player["hp"]
+        #shouldn't be possible to go over full health (i.e. 25/25) so this adds healing, but caps it at max HP 
+        player["hp"] = min(player["max_hp"], player["hp"] + heal_amount) 
+        gained = player["hp"] - old_hp
+        if gained > 0:
+            print(f"You rest by a warm vent and recover +{gained} HP.")
+            print("Catnip is still your main heal during combat.")
+        else:
+            print("You nap by a warm vent, but you're already at full HP. Healthy kitty!")
     else:
-        print("Invalid choice. Enter 1, 2, 3, or 4.")
-
-    return True
+        player["catnip"] += 1
+        print("Lucky day! You found hidden catnip. +1 catnip 🪴.")
+        print("Catnip heals HP when used in combat.")
 
 
 def demo_tutorial(name):
@@ -101,3 +131,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
