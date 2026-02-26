@@ -57,16 +57,31 @@ def handle_menu_choice(player, choice):
     return True
 
 
-def demo_tutorial(player):
-    """Walks the player through menu navigation before gameplay starts."""
+def demo_tutorial(name):
+    """Explain how the game works, how to win, and how to lose."""
 
     print("\n=== Meowtal Combat Demo ===")
-    print(f"Welcome, {player}.")
-    print("This game uses number choices in the menu.")
+    print(f"Welcome, {name}.")
+    print("You are a stray cat surviving a city of rogue robot vacuums.")
+
+    print("\nGoal:")
+    print("Reach Level 3, then defeat the Supreme Roomba.")
+
+    print("\nGame Over:")
+    print("If your HP drops to 0, your run ends.")
+
+    print("\nHow gameplay works:")
+    print("1) Explore: random alley events (enemies, treats, or quiet alley).")
+    print("2) Combat: choose actions each turn to survive and win XP/treats.")
+    print("3) Shop: spend treats on catnip and attack upgrades.")
+    print("4) Level up: stronger stats, then push toward the boss fight.")
+
+    print("\nMenu controls:")
     print("Type 1 to Explore.")
-    print("Type 2 to open the Shop.")
-    print("Type 3 to view your current stats.")
-    print("Type 4 to quit the game.")
+    print("Type 2 for Shop.")
+    print("Type 3 to view stats.")
+    print("Type 4 to quit.\n")
+
     input("Press Enter to open the main menu ->")
 
 def main():
