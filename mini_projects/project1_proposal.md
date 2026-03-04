@@ -159,3 +159,8 @@ I want to pursue this project because I think it will challenge me while also be
 - Associate a certain amt of catnip with boost in defence? how much are treats really going to be used?
 - add more events 
 - add a ascii image of the cat in the intro 
+
+## Feedback from peer 
+- creating powers for the cat so it can fight the enemy 
+- maybe creating sometype of maze where the cat is fighting the enemy (think pacman)
+- how does the cat fight? 
