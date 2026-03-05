@@ -2,24 +2,28 @@
 
 import random
 from MC_combat import combat
+from rich.console import Console
+from rich.panel import Panel
+console = Console()
+
 
 def explore(player):
     """Handle random events when the player explores."""
-    print("\nYou sneak into a neon-lit alley...")
+    console.print(Panel.fit("[bold cyan]You sneak into a neon-lit alley...[/]", border_style="cyan"))
     # randomizer for determining events
     event = random.randint(1, 100)
 
     # greatest prob for action/combat to keep game interesting and not make it too easy. Reward are less common.
     if event <= 40:
-        print("A rogue Roomba appears and chases you!")
-        print("Tip: save catnip for combat healing.")
+        console.print("[bold red]An enemy appears and chases you![/]\n")
+        console.print("[yellow]Tip: save catnip for combat healing.[/]")
         return combat(player, mode="explore")  # now actually enters combat
 
     elif event <= 70:
         found_treats = random.randint(2, 8)  # randomizes num treats you get each time
         player["treats"] += found_treats  # update stats
-        print(f"You found a fish-snack stash! +{found_treats} treats.")
-        print("Treats are currency for the shop, not direct healing.")  # inform player
+        console.print(f"[bold green]You found a fish-snack stash! +{found_treats} treats.[/]")
+        print("Treats are currency for the shop, not direct healing.\n")  # inform player
         return "treats"
 
     elif event <= 90:
@@ -29,16 +33,16 @@ def explore(player):
         player["hp"] = min(player["max_hp"], player["hp"] + heal_amount)
         gained = player["hp"] - old_hp
         if gained > 0:
-            print(f"You rest by a warm vent and recover +{gained} HP.")
+            console.print(f"[bold green]You rest by a warm vent and recover +{gained} HP.[/]")
             print("Catnip is still your main heal during combat.")
         else:
-            print("You nap by a warm vent, but you're already at full HP. Healthy kitty!")
+            console.print("[bold magenta]Lucky day! You found hidden catnip. +1 catnip.[/]\n")
         return "rest"
 
     else:
         player["catnip"] += 1
         print("Lucky day! You found hidden catnip. +1 catnip 🪴.")
-        print("Catnip heals HP when used in combat.")
+        print("Catnip heals HP when used in combat.\n")
         return "catnip"
 
 

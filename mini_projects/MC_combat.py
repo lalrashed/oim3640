@@ -1,6 +1,38 @@
 """Combat systems for Meowtal Combat."""
 
 import random
+from rich.console import Console
+from rich.panel import Panel
+from rich.prompt import Prompt
+
+console = Console()
+
+BOSS_ART= r"""
+            (\. -- ./)
+        O-0)))--|     \
+          |____________|
+           -|--|--|--|-
+           _T~_T~_T~_T_
+          |____________|
+          |_o_|____|_o_|
+       .-~/  :  |   %  \
+.-..-~   /  :   |  %:   \
+`-'     /   :   | %  :   \
+       /   :    |#   :    \
+      /    :    |     :    \
+     /    :     |     :     \
+ . -/     :     |      :     \- .
+|\  ~-.  :      |      :   .-~  /|
+\ ~-.   ~ - .  _|_  . - ~   .-~ /
+  ~-.  ~ -  . _ _ _ .  - ~  .-~
+       ~ -  . _ _ _ .  - ~"""
+
+def hp_bar(current, maximum, width=20):
+    """creates a bar to show player's changing HP"""
+    current = max(0, min(current, maximum))
+    filled = int((current / maximum) * width) if maximum else 0
+    empty = width - filled
+    return f"[green]{'█' * filled}[/][grey50]{'░' * empty}[/] {current}/{maximum}"
 
 
 def generate_enemy(player, mode="explore"):
@@ -61,29 +93,36 @@ def level_up(player):
         player["defense"] += 1
         player["hp"] = player["max_hp"]
         player["xp_to_next"] += 10
-        print(f"\nLEVEL UP! You are now level {player['level']}.")
-        print("Max HP +5, Attack +1, Defense +1, HP fully restored.")
+        console.print(f"\n[bold magenta]LEVEL UP![/] You are now level [bold]{player['level']}[/].")
+        console.print("[green]Max HP +5, Attack +1, Defense +1, HP fully restored.[/]")
+
 
 
 def combat(player, mode="explore"):
     """Turn-based combat loop. Returns win/loss/escape/boss_win."""
     enemy = generate_enemy(player, mode=mode)
-    print(f"\nA {enemy['name']} appears!")
+    enemy_max_hp = enemy["hp"] #fixed denominator for the fight 
+    console.print(Panel.fit(f"[bold red]A {enemy['name']} appears![/]", border_style="red"))
+
+    if enemy["boss"]:
+        console.print("[bold red]The Supreme Roomba descends...[/]")
+        console.print(BOSS_ART, style="bold red")
+
 
     while player["hp"] > 0 and enemy["hp"] > 0:
-        print("\n--- Combat ---")
-        print(f"Your HP: {player['hp']}/{player['max_hp']}")
-        print(f"{enemy['name']} HP: {enemy['hp']}")
-        print("1. Scratch")
-        print("2. Use Catnip (+8 HP)")
-        print("3. Run (50% chance)")
+        console.print("\n[bold]--- Combat ---[/]")
+        console.print(f"Your HP   : {hp_bar(player['hp'], player['max_hp'])}")
+        console.print(f"{enemy['name']} HP: {hp_bar(enemy['hp'], enemy_max_hp)}")
+        console.print("[cyan]1.[/] Scratch")
+        console.print("[cyan]2.[/] Use Catnip (+8 HP)")
+        console.print("[cyan]3.[/] Run (50% chance)")
 
-        action = input("Choose action: ").strip()
+        action = Prompt.ask("Choose action", choices=["1", "2", "3"], default="1")
 
         if action == "1":
             damage = calculate_damage(player["attack"], enemy["defense"])
             enemy["hp"] -= damage
-            print(f"You scratch for {damage} damage.")
+            console.print(f"[green]You scratch for {damage} damage.[/]")
 
         elif action == "2":
             if player["catnip"] > 0:
@@ -91,7 +130,7 @@ def combat(player, mode="explore"):
                 old_hp = player["hp"]
                 player["hp"] = min(player["max_hp"], player["hp"] + 8)
                 healed = player["hp"] - old_hp
-                print(f"You used catnip and healed {healed} HP.")
+                console.print(f"[green]You used catnip and healed {healed} HP.[/]")
             else:
                 print("No catnip left.")
                 continue
@@ -100,17 +139,17 @@ def combat(player, mode="explore"):
             if random.random() < 0.5:
                 print("You escaped!")
                 return "escape"
-            print("Run failed! You lose your turn.")
+            console.print("[yellow]Run failed! You lose your turn.[/]")
 
         else:
             print("Invalid choice.")
             continue
 
         if enemy["hp"] <= 0:
-            print(f"\nYou defeated {enemy['name']}!")
+            console.print(f"[bold green]You defeated {enemy['name']}![/]")
             player["xp"] += enemy["xp_reward"]
             player["treats"] += enemy["treat_reward"]
-            print(f"+{enemy['xp_reward']} XP, +{enemy['treat_reward']} treats")
+            console.print(f"[cyan]+{enemy['xp_reward']} XP[/], [yellow]+{enemy['treat_reward']} treats[/]")
 
             if enemy["boss"]:
                 player["boss_defeated"] = True
@@ -121,7 +160,7 @@ def combat(player, mode="explore"):
 
         enemy_damage = calculate_damage(enemy["attack"], player["defense"])
         player["hp"] -= enemy_damage
-        print(f"The {enemy['name']} hits you for {enemy_damage} damage.")
+        console.print(f"[red]The {enemy['name']} hits you for {enemy_damage} damage.[/]")
 
-    print("\nYou were defeated... ")
+    console.print("[bold red]\nYou were defeated...[/]")
     return "loss"

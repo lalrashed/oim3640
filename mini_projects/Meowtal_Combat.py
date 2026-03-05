@@ -1,8 +1,45 @@
 #Meowtal Combat RPG
 """Project 1 - Meowtal Combat 
 """
-from MC_explore import explore, hunt_boss 
+from rich.console import Console
+from rich.panel import Panel
+from rich.table import Table
+from rich.prompt import Prompt
+
+from MC_explore import explore, hunt_boss
 from MC_shop import shop
+
+console = Console()
+
+WIN_ART =r"""    *                  *
+             __                *
+          ,db'    *     *
+         ,d8/       *        *    *
+         888
+         `db\       *     *
+           `o`_                    **
+      *               *   *    _      *
+            *                 / )
+         *    (\__/) *       ( (  *
+       ,-.,-.,)    (.,-.,-.,-.) ).,-.,-.
+      | @|  ={      }= | @|  / / | @|o |
+     _j__j__j_)     `-------/ /__j__j__j_
+     ________(               /___________
+      |  | @| \              || o|O | @|
+      |o |  |,'\       ,   ,'"|  |  |  |  
+     vV\|/vV|`-'\  ,---\   | \Vv\hjwVv\//v
+                _) )    `. \ /
+               (__/       ) )
+                         (_/"""
+
+LOSE_ART =  r"""
+      |\      _,,,---,,_
+      /,`.-'`'    -.  ;-;;,_
+     |,4-  ) )-,_. ,\ (  `'-'
+    '---''(_/--'  `-'\_)  """
+
+
+
 
 def create_player(name):
     """Create and return the player stats dictionary. Set to default values."""
@@ -20,83 +57,114 @@ def create_player(name):
         "boss_defeated": False  #for win condition
     }
 
+
 def main_menu(player):
     """Display the main menu options."""
-    print("\n=== MEOWTAL COMBAT ===")
-    print("1. Explore 🔭")
-    print("2. Shop 🛍️")
-    print("3. View Stats 🌟 ")
-    print("4. Quit 🛑")
-    if player["level"]>=3:
-        print("5. Hunt Boss - FINAL CHALLENGE UNLOCKED")
+    menu_text = (
+        "[bold cyan]1.[/] Explore 🔭\n"
+        "[bold cyan]2.[/] Shop 🛍️\n"
+        "[bold cyan]3.[/] View Stats 🌟\n"
+        "[bold cyan]4.[/] Quit 🛑"
+    )
+    if player["level"] >= 3:
+        menu_text += "\n[bold cyan]5.[/] Hunt Boss - [bold red]FINAL CHALLENGE UNLOCKED[/]"
+
+    console.print(
+        Panel.fit(
+            menu_text,
+            title="[bold magenta]MEOWTAL COMBAT[/]",
+            border_style="bright_blue",
+        )
+    )
+
+
 
 def handle_menu_choice(player, choice):
     """Handle one menu choice. Return False to stop the game loop."""
     if choice == "1":
         result = explore(player)
         if result == "loss":
-            print("\nGAME OVER: Your kitty was defeated in the alley.")
+            console.print("\n[bold red]GAME OVER:[/] Your kitty was defeated in the alley.")
+            console.print(LOSE_ART, style="red")
             return False
+        pause()
     elif choice == "2":
         shop(player)
     elif choice == "3":
         show_stats(player)
+        pause()
     elif choice == "4":
-        print("Goodbye, alley cat.")
+        console.print("[bold yellow]Goodbye, alley cat.[/]")
         return False
     elif choice == "5":
         result = hunt_boss(player)
         if result == "loss":
+            console.print(LOSE_ART, style="red")
             return False
         if result == "boss_win":
-            print("\nYou defeated the Supreme Roomba. You win!")
+            console.print("\n[bold green]You defeated the Supreme Roomba. You win![/]")
+            console.print(WIN_ART, style="green")
             return False
     else:
-        print("Invalid choice. Enter number ")
+        console.print("[red]Invalid choice. Enter a number.[/]")
 
     return True
 
 
 def show_stats(player):
-    """Display current player stats."""
-    print("\n=== 🐈 Cat Stats 🐈===")
-    print(f"Name: {player['name']}")
-    print(f"HP: {player['hp']}/{player['max_hp']}")
-    print(f"Attack: {player['attack']}")
-    print(f"Defense: {player['defense']}")
-    print(f"Level: {player['level']}")
-    print(f"XP: {player['xp']}")
-    print(f"Treats: {player['treats']}")
-    print(f"Catnip: {player['catnip']}")
 
+    """Display current player stats."""
+    table = Table(title="🐈 Cat Stats 🐈", show_header=True, header_style="bold green")
+    table.add_column("Stat", style="cyan")
+    table.add_column("Value", style="white")
+
+    table.add_row("Name", str(player["name"]))
+    table.add_row("HP", f'{player["hp"]}/{player["max_hp"]}')
+    table.add_row("Attack", str(player["attack"]))
+    table.add_row("Defense", str(player["defense"]))
+    table.add_row("Level", str(player["level"]))
+    table.add_row("XP", str(player["xp"]))
+    table.add_row("Treats", str(player["treats"]))
+    table.add_row("Catnip", str(player["catnip"]))
+
+    console.print(table)
 
 
 def demo_tutorial(name):
     """Explain how the game works, how to win, and how to lose."""
+    demo_text = (
+        f"Welcome, [bold]{name}[/].\n"
+        "You are a stray cat surviving a city of rogue robot vacuums.\n\n"
+        "[bold]Goal:[/]\n"
+        "Reach [bold]Level 3[/], then defeat the [bold]Supreme Roomba[/].\n\n"
+        "[bold]Game Over:[/]\n"
+        "If your HP drops to [bold]0[/], your run ends.\n\n"
+        "[bold]How gameplay works:[/]\n"
+        "1) Explore: random alley events (enemies, treats, or quiet alley).\n"
+        "2) Combat: choose actions each turn to survive and win [bold]XP[/]/treats.\n"
+        "3) Shop: spend treats on [bold]catnip[/] and attack upgrades.\n"
+        "4) Level up: stronger stats, then push toward the boss fight.\n\n"
+        "[bold]Menu controls:[/]\n"
+        "Type [bold]1[/] to Explore.\n"
+        "Type [bold]2[/] for Shop.\n"
+        "Type [bold]3[/] to view stats.\n"
+        "Type [bold]4[/] to quit."
+    )
 
-    print("\n=== Meowtal Combat Demo ===")
-    print(f"Welcome, {name}.")
-    print("You are a stray cat surviving a city of rogue robot vacuums.")
+    console.print(
+        Panel(
+            demo_text,
+            title="Meowtal Combat Demo",
+            border_style="bright_blue",
+            expand=False,
+            padding=(1, 2),
+        )
+    )
+    input("Press Enter to open the main menu -> ")
 
-    print("\nGoal:")
-    print("Reach Level 3, then defeat the Supreme Roomba.")
-
-    print("\nGame Over:")
-    print("If your HP drops to 0, your run ends.")
-
-    print("\nHow gameplay works:")
-    print("1) Explore: random alley events (enemies, treats, or quiet alley).")
-    print("2) Combat: choose actions each turn to survive and win XP/treats.")
-    print("3) Shop: spend treats on catnip and attack upgrades.")
-    print("4) Level up: stronger stats, then push toward the boss fight.")
-
-    print("\nMenu controls:")
-    print("Type 1 to Explore.")
-    print("Type 2 for Shop.")
-    print("Type 3 to view stats.")
-    print("Type 4 to quit.\n")
-
-    input("Press Enter to open the main menu ->")
+def pause():
+    """spaces out the game"""
+    input("Press Enter to continue...\n\n")
 
 
 def main():
@@ -109,11 +177,12 @@ def main():
               {_:Y:.}_//
    ----------{_}^-'{_}----------"""
 
-
+    console.print("\n[bold yellow]Welcome to Meowtal Combat! Brave kitty, you have a journey ahead of you![/]")
+    console.print(welcome_art, style="bold white")
     
-    print("Welcome to Meowtal Combat! Brave kitty, you have a journey ahead of you!")
-    print(welcome_art)
-    name=input("Before you start your journey, what's your name?").strip()
+    # print("Welcome to Meowtal Combat! Brave kitty, you have a journey ahead of you!")
+    # print(welcome_art)
+    name=input("\nBefore you start your journey, what's your name?").strip()
     print(f"Nice to meet you {name}!")
     demo_tutorial(name) 
     player = create_player(name)
