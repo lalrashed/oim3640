@@ -16,8 +16,22 @@ def _show_shop_menu(player):
     table.add_column("Status", justify="center")
 
     treats = player["treats"]
-    table.add_row("1", "Buy Catnip (+1)", "6", "[green]Affordable[/]" if treats >= 6 else "[red]Too Expensive[/]")
-    table.add_row("2", "Warm Vent Rest (+10 HP)", "5", "[green]Affordable[/]" if treats >= 5 else "[red]Too Expensive[/]")
+    level = player["level"]
+    catnip_cost = 6 + ((level - 1) * 2)
+    rest_cost = 5 + ((level - 1) * 2)
+
+    table.add_row(
+        "1",
+        "Buy Catnip (+1)",
+        str(catnip_cost),
+        "[green]Affordable[/]" if treats >= catnip_cost else "[red]Too Expensive[/]",
+    )
+    table.add_row(
+        "2",
+        "Warm Vent Rest (+10 HP)",
+        str(rest_cost),
+        "[green]Affordable[/]" if treats >= rest_cost else "[red]Too Expensive[/]",
+    )
     table.add_row("3", "Claw Upgrade (+1 Attack)", "20", "[green]Affordable[/]" if treats >= 20 else "[red]Too Expensive[/]")
     table.add_row("4", "Leave shop", "-", "-")
 
@@ -37,18 +51,21 @@ def _show_shop_menu(player):
 
 
 def shop(player):
-    """Interactive shop loop for spending treats."""
+    """Interactive shop loop for spending treats. Cost of catnip and rest increases with player level"""
     in_shop = True
     while in_shop:
+        level = player["level"]
+        catnip_cost = 6 + ((level - 1) * 2)
+        rest_cost = 5 + ((level - 1) * 2)
         _show_shop_menu(player)
         choice = Prompt.ask("Choose an option", choices=["1", "2", "3", "4"], default="4")
         # choice = input("Choose an option: ").strip()
 
         if choice == "1":
-            if player["treats"] < 6:
+            if player["treats"] < catnip_cost:
                 print("Not enough treats.")
                 continue
-            player["treats"] -= 6
+            player["treats"] -= catnip_cost
             player["catnip"] += 1
             print("You bought 1 catnip.")
 
@@ -56,10 +73,10 @@ def shop(player):
             if player["hp"] >= player["max_hp"]:
                 print("You are already at full HP.")
                 continue
-            if player["treats"] < 5:
+            if player["treats"] < rest_cost:
                 print("Not enough treats.")
                 continue
-            player["treats"] -= 5
+            player["treats"] -= rest_cost
             old_hp = player["hp"]
             player["hp"] = min(player["max_hp"], player["hp"] + 10)
             healed = player["hp"] - old_hp

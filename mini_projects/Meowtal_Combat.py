@@ -102,7 +102,7 @@ def handle_menu_choice(player, choice):
             console.print(LOSE_ART, style="red")
             return False
         if result == "boss_win":
-            console.print("\n[bold green]You defeated the Supreme Roomba. You win![/]")
+            console.print("\n[bold green]You defeated the Supreme Roomba. You win kitty![/]")
             console.print(WIN_ART, style="green")
             return False
     else:
@@ -139,6 +139,7 @@ def demo_tutorial(name):
         "Reach [bold]Level 3[/], then defeat the [bold]Supreme Roomba[/].\n\n"
         "[bold]Game Over:[/]\n"
         "If your HP drops to [bold]0[/], your run ends.\n\n"
+        "[bold]Tip[/]:\nTreats are used as currency for the Shop. You can use treats to buy catnip that will heal you in combat or buy rests that will recover your HP.\n\n "
         "[bold]How gameplay works:[/]\n"
         "1) Explore: random alley events (enemies, treats, or quiet alley).\n"
         "2) Combat: choose actions each turn to survive and win [bold]XP[/]/treats.\n"
@@ -179,9 +180,7 @@ def main():
 
     console.print("\n[bold yellow]Welcome to Meowtal Combat! Brave kitty, you have a journey ahead of you![/]")
     console.print(welcome_art, style="bold white")
-    
-    # print("Welcome to Meowtal Combat! Brave kitty, you have a journey ahead of you!")
-    # print(welcome_art)
+ 
     name=input("\nBefore you start your journey, what's your name?").strip()
     print(f"Nice to meet you {name}!")
     demo_tutorial(name) 

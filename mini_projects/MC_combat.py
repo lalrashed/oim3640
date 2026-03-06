@@ -110,39 +110,51 @@ def combat(player, mode="explore"):
 
 
     while player["hp"] > 0 and enemy["hp"] > 0:
-        console.print("\n[bold]--- Combat ---[/]")
+        console.rule("[bold blue]Combat Turn[/]")
         console.print(f"Your HP   : {hp_bar(player['hp'], player['max_hp'])}")
         console.print(f"{enemy['name']} HP: {hp_bar(enemy['hp'], enemy_max_hp)}")
-        console.print("[cyan]1.[/] Scratch")
-        console.print("[cyan]2.[/] Use Catnip (+8 HP)")
-        console.print("[cyan]3.[/] Run (50% chance)")
+        console.print()
+        console.print(
+            Panel.fit(
+                "1. Scratch\n2. Use Catnip (+8 to +13 HP)\n3. Run (50% chance)",
+                title="Choose Action",
+                border_style="cyan",
+            )
+        )
 
         action = Prompt.ask("Choose action", choices=["1", "2", "3"], default="1")
+        console.print()
 
         if action == "1":
             damage = calculate_damage(player["attack"], enemy["defense"])
             enemy["hp"] -= damage
             console.print(f"[green]You scratch for {damage} damage.[/]")
+            console.print()
 
         elif action == "2":
             if player["catnip"] > 0:
                 player["catnip"] -= 1
                 old_hp = player["hp"]
-                player["hp"] = min(player["max_hp"], player["hp"] + 8)
+                heal_amount = 8 + min(5, player["level"] - 1)
+                player["hp"] = min(player["max_hp"], player["hp"] + heal_amount)
                 healed = player["hp"] - old_hp
                 console.print(f"[green]You used catnip and healed {healed} HP.[/]")
+                console.print()
             else:
-                print("No catnip left.")
+                console.print("[yellow]No catnip left.[/]")
+                console.print()
                 continue
 
         elif action == "3":
             if random.random() < 0.5:
-                print("You escaped!")
+                console.print("[yellow]You escaped![/]")
                 return "escape"
             console.print("[yellow]Run failed! You lose your turn.[/]")
+            console.print()
 
         else:
-            print("Invalid choice.")
+            console.print("[red]Invalid choice.[/]")
+            console.print()
             continue
 
         if enemy["hp"] <= 0:
@@ -150,6 +162,7 @@ def combat(player, mode="explore"):
             player["xp"] += enemy["xp_reward"]
             player["treats"] += enemy["treat_reward"]
             console.print(f"[cyan]+{enemy['xp_reward']} XP[/], [yellow]+{enemy['treat_reward']} treats[/]")
+            console.print()
 
             if enemy["boss"]:
                 player["boss_defeated"] = True
@@ -158,9 +171,11 @@ def combat(player, mode="explore"):
             level_up(player)
             return "win"
 
+        console.print("[dim]Enemy turn...[/]")
         enemy_damage = calculate_damage(enemy["attack"], player["defense"])
         player["hp"] -= enemy_damage
         console.print(f"[red]The {enemy['name']} hits you for {enemy_damage} damage.[/]")
+        console.print()
 
     console.print("[bold red]\nYou were defeated...[/]")
     return "loss"
